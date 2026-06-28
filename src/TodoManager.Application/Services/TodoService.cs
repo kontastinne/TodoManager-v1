@@ -76,6 +76,19 @@ namespace TodoManager.Application.Services
             CreatedAtUtc = item.CreatedAtUtc,
             UpdatedAtUtc = item.UpdatedAtUtc
         };
+
+        public async Task<PagedResult<TodoItemDto>> GetPagedAsync(TodoQueryParams query, CancellationToken ct = default)
+        {
+            var result = await _repository.GetPagedAsync(query, ct);
+
+            return new PagedResult<TodoItemDto>
+            {
+                Items = result.Items.Select(ToDto).ToList(),
+                TotalCount = result.TotalCount,
+                Page = result.Page,
+                PageSize = result.PageSize
+            };
+        }
     }
 }
 

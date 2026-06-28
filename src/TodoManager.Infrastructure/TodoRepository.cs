@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TodoManager.Application.DTOs;
 using TodoManager.Application.Interfaces;
 using TodoManager.Domain.Entities;
 using TodoManager.Infrastructure.Persistence;
@@ -45,5 +46,48 @@ namespace TodoManager.Infrastructure
         {
             await _context.SaveChangesAsync(ct);
         }
+
+        public async Task<PagedResult<TodoItem>> GetPagedAsync(TodoQueryParams query, CancellationToken ct = default)
+        {
+            var q = _context.TodoItems.AsQueryable();
+
+            if (query.Status is not null)
+                q = q.Where(x => x.Status == query.Status);
+
+            q = query.SortBy.ToLowerInvariant() switch
+            {
+                "title" => query.SortDesc
+                    ? q.OrderByDescending(x => x.Title)
+                    : q.OrderBy(x => x.Title),
+
+                "duedate" => query.SortDesc
+                    ? q.OrderByDescending(x => x.DueDate)
+                    : q.OrderBy(x => x.DueDate),
+
+                "status" => query.SortDesc
+                    ? q.OrderByDescending(x => x.Status)
+                    : q.OrderBy(x => x.Status),
+
+                _ => query.SortDesc   // default: createdAtUtc
+                    ? q.OrderByDescending(x => x.CreatedAtUtc)
+                    : q.OrderBy(x => x.CreatedAtUtc)
+            };
+            var totalCount = await q.CountAsync(ct);
+
+            var items = await q
+                .Skip((query.Page - 1) * query.PageSize)
+                .Take(query.PageSize)
+                .ToListAsync(ct);
+
+            return new PagedResult<TodoItem> 
+            {   
+                Items = items,
+                TotalCount = totalCount,
+                Page = query.Page,
+                PageSize = query.PageSize 
+            };
+        }
+
+
     }
 }

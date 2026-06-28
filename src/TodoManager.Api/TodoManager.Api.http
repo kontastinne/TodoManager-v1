@@ -1,6 +1,37 @@
-@TodoManager.Api_HostAddress = http://localhost:5019
+@host = http://localhost:5019
 
-GET {{TodoManager.Api_HostAddress}}/weatherforecast/
-Accept: application/json
+### Get all
+GET {{host}}/api/todos
+
+### Get by id
+GET {{host}}/api/todos/4
 
 ###
+GET {{host}}/api/todos?status=0
+###
+GET {{host}}/api/todos?sortBy=title&sortDesc=true
+###
+GET {{host}}/api/todos?page=1&pageSize=2
+
+### Create
+POST {{host}}/api/todos
+Content-Type: application/json
+
+{
+  "title": "My first todo",
+  "description": "Testing API"
+}
+
+### Update
+PUT {{host}}/api/todos/3
+Content-Type: application/json
+
+{
+  "title": "Updated todo",
+  "description": null,
+  "status": 2,
+  "dueDate": null
+}
+
+### Delete
+DELETE {{host}}/api/todos/2

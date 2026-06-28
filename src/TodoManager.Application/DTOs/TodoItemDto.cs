@@ -1,9 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using TodoManager.Domain.Entities;
 
-namespace TodoManager.Domain.Entities
+namespace TodoManager.Application.DTOs
 {
-    public class TodoItem
+    public class TodoItemDto
     {
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;

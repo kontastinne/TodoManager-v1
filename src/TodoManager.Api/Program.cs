@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TodoManager.Infrastructure.Persistence;
+using TodoManager.Application.Interfaces;
+using TodoManager.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,8 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<TodoDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
 
 var app = builder.Build();
 
